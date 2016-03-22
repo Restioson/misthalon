@@ -2,7 +2,6 @@
 package io.github.restioson.misthalon;
 
 //Imports
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.math.Rectangle;
 
 //Collision handler class
@@ -12,7 +11,7 @@ public class CollisionHandler {
 	private Main mainclass;
 	
 	//Constructor
-	public CollisionHandler(Main mainclass, MapLayer collisionLayer) {
+	public CollisionHandler(Main mainclass) {
 		
 		this.mainclass = mainclass;
 		

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
 
 //Renderer
@@ -66,6 +67,41 @@ public class Renderer {
 	//Method to get camera
 	public OrthographicCamera getCamera() {
 		return this.camera;
+	}
+	
+	//Method to clamp camera to map
+	public void clampCamera() {
+		
+		//Get main layer of map
+		TiledMapTileLayer mainlayer = (TiledMapTileLayer) this.mainclass.getMapHandler().getLayer(0);
+		
+		//Max height & width for the camera to be at
+		int maxheight = mainlayer.getHeight() * 32;
+		int maxwidth = mainlayer.getWidth() * 32;
+		
+		//Min height & width for the camera to be at
+		int minheight = Gdx.graphics.getHeight();
+		int minwidth = Gdx.graphics.getWidth();
+		
+		//Clamp x: max
+		if (this.camera.position.x > maxwidth) {
+			this.camera.position.set(maxwidth, this.camera.position.y, 0) ;
+		}
+		
+		//Clamp x: min
+		if (this.camera.position.x > minwidth) {
+			this.camera.position.set(minwidth, this.camera.position.y, 0) ;
+		}
+		
+		//Clamp y: max
+		if (this.camera.position.y > maxheight) {
+			this.camera.position.set(this.camera.position.y, maxheight, 0) ;
+		}
+		
+		//Clamp y: min
+		if (this.camera.position.y > minheight) {
+			this.camera.position.set(this.camera.position.y, minheight, 0) ;
+		}
 	}
 	
 	//Method to translate camera

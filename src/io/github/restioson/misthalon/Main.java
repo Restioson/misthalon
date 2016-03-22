@@ -1,13 +1,11 @@
 //Package declaration
 package io.github.restioson.misthalon;
 
-import java.math.BigInteger;
-
 //Imports
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture; 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -18,7 +16,6 @@ public class Main extends ApplicationAdapter {
 	//Initialise variables
 	Player player;
 	Array<Entity> entities;
-	BigInteger tickCount;
 	
 	//Initialise handlers
 	InputHandler inputhandler;
@@ -44,7 +41,7 @@ public class Main extends ApplicationAdapter {
 		inputhandler = new InputHandler(this);
 		Gdx.input.setInputProcessor(inputhandler);
 		maphandler = new MapHandler(this, "lolxd.tmx");
-		collisionhandler = new CollisionHandler(this, maphandler.getCollisionLayer());
+		collisionhandler = new CollisionHandler(this);
 		
 
 		//Create entities array
@@ -56,9 +53,6 @@ public class Main extends ApplicationAdapter {
 		player.setX(worldcenter.x);
 		player.setY(worldcenter.y);
 		
-		//Initialise tick count
-		tickCount = BigInteger.valueOf(0L);
-		
 	}
 	
 	//Method called on tick
@@ -67,15 +61,14 @@ public class Main extends ApplicationAdapter {
 		
 		/* Game logic */
 		
-		
 		//Collision
 		collisionhandler.handleMapCollisions();
 		
+		//Make the camera follow the player
+		renderer.getCamera().position.set(player.getX(), this.player.getY(), 0);
 		
-		this.renderer.getCamera().position.set(this.player.getX(), this.player.getY(), 0);
-		
-		//Increment tickCount by 1
-		tickCount.add(BigInteger.valueOf(1L));
+		//Prevent the camera from leaving map
+		renderer.clampCamera();
 		
 		/* Render game */
 		renderer.render();
@@ -103,11 +96,6 @@ public class Main extends ApplicationAdapter {
 		return entities;
 	}
 	
-	//Method to get tickCount
-	public BigInteger getTickCount() {
-		return this.tickCount;
-	}
-	
 	//Method to get player
 	public Player getPlayer() {
 		return player;
@@ -127,6 +115,4 @@ public class Main extends ApplicationAdapter {
 	public MapHandler getMapHandler() {
 		return this.maphandler;
 	}
-	
 }
- 

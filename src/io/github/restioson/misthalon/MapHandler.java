@@ -39,9 +39,9 @@ public class MapHandler {
 		this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 	}
 	
-	//Get collision layer
-	public MapLayer getCollisionLayer() {
-		return this.collisionLayer;
+	//Method to get layer of map
+	public MapLayer getLayer(int index) {
+		return this.tiledMap.getLayers().get(index);
 	}
 	
 	//Set camera view

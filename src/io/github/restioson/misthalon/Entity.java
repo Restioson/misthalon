@@ -10,8 +10,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
-import java.math.BigInteger;
-
 //Most basic entity class
 public class Entity implements Poolable{
 	
@@ -22,8 +20,8 @@ public class Entity implements Poolable{
 	private int invmaxsize;
 	private Array<Float> lastpos;
 	private boolean solid;
+	@SuppressWarnings("unused") //Kept for subclasses to use
 	private Main mainclass;
-	private BigInteger lastMovedTick;
 	
 	//Default constructor
 	public Entity() {
@@ -41,7 +39,6 @@ public class Entity implements Poolable{
 		this.lastpos.add(coords.get(0));
 		this.lastpos.add(coords.get(1));
 		this.mainclass = mainclass;
-		this.lastMovedTick = this.mainclass.getTickCount();
 		
 		
 		//Set dimensions of rect to fit that of texture
@@ -162,7 +159,6 @@ public class Entity implements Poolable{
 	
 	//Actions to perform every tick
 	public void tick() {
-		this.lastMovedTick = this.mainclass.getTickCount();
 	}
 	
 	//Actions to perform when interacted with
@@ -293,11 +289,6 @@ public class Entity implements Poolable{
 	public Array<Float> getLastpos() {
 		return this.lastpos;
 	}
-	
-	//Method to get when last moved
-	public BigInteger getLastMoved() {
-		return this.lastMovedTick;
-	}	
 	
 	//Method to go to last pos
 	public void goToLastPos() {
