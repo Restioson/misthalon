@@ -8,18 +8,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 //Most basic entity class
-public class Entity implements Poolable{
+public class Entity implements Poolable, Disposable {
 	
 	//Fields
 	private Rectangle rect;
 	private Array<Item> inv;
 	private Sprite sprite;
 	private int invmaxsize;
-	private Array<Float> lastpos;
 	private boolean solid;
+	private String movingdir;
+	private int speed;
 	@SuppressWarnings("unused") //Kept for subclasses to use
 	private Main mainclass;
 	
@@ -28,17 +30,15 @@ public class Entity implements Poolable{
 	}
 	
 	//Constructor
-	public Entity(Texture texture, Array<Float> coords, Array<Item> inventory, int invsize, Main mainclass) {
+	public Entity(Texture texture, Array<Float> coords, Array<Item> inventory, int invsize, int speed, Main mainclass) {
 		
 		//Transfer argument values to fields
 		this.rect = new Rectangle();
 		this.inv = inventory;
 		this.sprite = new Sprite(texture);
 		this.invmaxsize = invsize;
-		this.lastpos = new Array<Float>();
-		this.lastpos.add(coords.get(0));
-		this.lastpos.add(coords.get(1));
 		this.mainclass = mainclass;
+		this.movingdir = "none";
 		
 		
 		//Set dimensions of rect to fit that of texture
@@ -55,16 +55,15 @@ public class Entity implements Poolable{
 	}
 
 	//Constructor
-	public Entity(Texture texture, Array<Float> coords, Array<Item> inventory, int invsize, boolean solid, Main mainclass) {
+	public Entity(Texture texture, Array<Float> coords, Array<Item> inventory, int invsize, boolean solid, int speed, Main mainclass) {
 		
 		//Transfer argument values to fields
 		this.rect = new Rectangle();
 		this.inv = inventory;
 		this.sprite = new Sprite(texture);
 		this.invmaxsize = invsize;
-		this.lastpos = new Array<Float>();
-		this.lastpos.add(coords.get(0));
-		this.lastpos.add(coords.get(1));
+		this.movingdir = "none";
+		this.speed = speed;
 		
 		
 		//Set dimensions of rect to fit that of texture
@@ -82,22 +81,19 @@ public class Entity implements Poolable{
 	
 	
 	//Constructor
-	public Entity(Texture texture, Array<Item> inventory, int invsize, boolean solid, Main mainclass) {
+	public Entity(Texture texture, Array<Item> inventory, int invsize, boolean solid, int speed, Main mainclass) {
 		
 		//Transfer argument values to fields
 		this.rect = new Rectangle();
 		this.inv = inventory;
 		this.sprite = new Sprite(texture);
 		this.invmaxsize = invsize;
+		this.movingdir = "none";
+		this.speed = speed;
 		
 		//Set dimensions of rect to fit that of texture
 		this.rect.setWidth(texture.getWidth());
 		this.rect.setHeight(texture.getHeight());
-		
-		//Default lastpos
-		this.lastpos = new Array<Float>();
-		this.lastpos.add(0f);
-		this.lastpos.add(0f);
 		
 		//Set coords of rect
 		this.rect.setX(0);
@@ -108,13 +104,14 @@ public class Entity implements Poolable{
 	}
 	
 	//Constructor
-	public Entity(Texture texture, Array<Item> inventory, int invsize, Main mainclass) {
+	public Entity(Texture texture, Array<Item> inventory, int invsize, int speed, Main mainclass) {
 		
 		//Transfer argument values to fields
 		this.rect = new Rectangle();
 		this.inv = inventory;
 		this.sprite = new Sprite(texture);
 		this.invmaxsize = invsize;
+		this.movingdir = "none";
 		
 		//Set dimensions of rect to fit that of texture
 		this.rect.setWidth(texture.getWidth());
@@ -126,10 +123,7 @@ public class Entity implements Poolable{
 	}
 	
 	//Translate rect & sprite -- manual movement
-	public void translate(Float x, Float y) {
-		this.lastpos.clear();
-		this.lastpos.add(this.rect.getX());
-		this.lastpos.add(this.rect.getY());
+	public void translate(float x, float y) {
 		this.rect.setX(this.rect.getX() + x);
 		this.rect.setY(this.rect.getY() + y);
 		this.sprite.translate(x, y);
@@ -258,9 +252,18 @@ public class Entity implements Poolable{
 	
 	//Poolable req method
 	public void reset() {
-		
+		//TODO fill
 	}
 	
+	//Method to get moving direction
+	public String getMovingDirection() {
+		return this.movingdir;
+	}
+	
+	//Method to start moving
+	public void startMoving(String direction) {
+		this.movingdir = direction;
+	}
 	
 	//Method to get item in inv by slot index
 	public Item getItemIndex(int index) { 
@@ -285,23 +288,77 @@ public class Entity implements Poolable{
 		return this.solid;
 	}
 	
-	//Method to get last position
-	public Array<Float> getLastpos() {
-		return this.lastpos;
+	//Method to move
+	public void move() {
+		
+		/* Switch */
+		switch (movingdir) {
+		
+		
+		/*
+		 * Note on use of floats
+		 * At the moment, you must be wanting to kick me for using floats with square roots,
+		 * because floats are so inaccurate. My answer to you is the following: LibGDX (afaik) doesn't 
+		 * support use of doubles as coordinates for rectangles/sprites, therefore I am forced to
+		 * use them.
+		 * 
+		 * If you know of a way to use doubles instead, please create a pull request or an suggestion
+		 * in the issues section.
+		 * 
+		 * Note on use of square root 2 for diagonals
+		 * If I moved the player's y and x both by speed, then I would effectively be moving them
+		 * twice their speed in one tick. This could be exploited, so I have decided to use the
+		 * rule to calculate the diagonal of a square with sides speed and then move them half of the
+		 * diagonal in x and in y.
+		 */
+		
+			//Up
+			case "up": 
+				this.translate(0f, (float) this.speed);
+				break;
+			
+			//Down
+			case "down":
+				this.translate(0f, (float) -this.speed);
+				break;
+				
+			//Left
+			case "left":
+				this.translate((float) -this.speed, 0f);
+				break;
+				
+			//Right
+			case "right":
+				this.translate((float) this.speed, 0f);
+				break;
+				
+			//Up-left diagonal
+			case "up-left":
+				this.translate( -((float) this.speed * (float) Math.sqrt(2)) / 2, (((float) this.speed * (float) Math.sqrt(2)) / 2));
+				break;
+				
+			//Up-right diagonal
+			case "up-right":
+				this.translate( (((float) this.speed * (float) Math.sqrt(2)) / 2), ((float) this.speed * (float) Math.sqrt(2)) / 2);
+				break;
+				
+			//Down-left diagonal
+			case "down-left":
+				this.translate( -(((float) this.speed * (float) Math.sqrt(2)) / 2), -(((float) this.speed * (float) Math.sqrt(2)) / 2) );
+				break;
+				
+			//Down-right diagonal (Damn right you are!)
+			case "down-right":
+				this.translate( (((float) this.speed * (float) Math.sqrt(2)) / 2), -(((float) this.speed * (float) Math.sqrt(2)) / 2) );
+				break;
+			}
+		
 	}
 	
-	//Method to go to last pos
-	public void goToLastPos() {
-		//Move rect
-		this.rect.x = this.lastpos.get(0);
-		this.rect.y = this.lastpos.get(1);
-		
-		//Move sprite
-		this.sprite.setX(this.lastpos.get(0));
-		this.sprite.setY(this.lastpos.get(1));
-		
+	//Method to stop moving
+	public void stopMoving() {
+		this.movingdir = "none";
 	}
-	
 	
 	//Dispose
 	public void dispose() {

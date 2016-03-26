@@ -25,7 +25,7 @@ public class CollisionHandler {
 			
 			//Collision!
 			if (this.mainclass.getPlayer().getRect().overlaps(rect)) {
-				this.mainclass.getPlayer().goToLastPos();
+				this.mainclass.getPlayer().stopMoving();
 			}
 		}
 		
@@ -35,12 +35,12 @@ public class CollisionHandler {
 					
 					//Collision! (map)
 					if (curentity.getRect().overlaps(rect)) {
-						curentity.goToLastPos();
+						curentity.stopMoving();
 					}
 					
 					//Collision! (player)
 					if (curentity.getRect().overlaps(this.mainclass.getPlayer().getRect())) {
-						this.mainclass.getPlayer().goToLastPos();
+						this.mainclass.getPlayer().stopMoving();
 				}	
 			}
 		}

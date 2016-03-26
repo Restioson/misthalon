@@ -16,7 +16,7 @@ public class DroppedItem extends Entity {
 	public DroppedItem(Texture texture, Rectangle rect, Array<Float> coords, Array<Item> inventory, Item item, Main mainclass) {
 		
 		//Init superobj
-		super(texture, coords, inventory, 1, mainclass);
+		super(texture, coords, inventory, 1, 0, mainclass);
 		
 		//Transfer argument values to fields
 		this.item = item;

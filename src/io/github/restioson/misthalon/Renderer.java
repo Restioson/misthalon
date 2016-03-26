@@ -22,6 +22,9 @@ public class Renderer {
 		this.camera = new OrthographicCamera();
 		this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
+		//Mainclass
+		this.mainclass = mainclass;
+		
 		//Create SpriteBatches
 		this.spritebatch = new SpriteBatch();
 	}
@@ -73,15 +76,16 @@ public class Renderer {
 	public void clampCamera() {
 		
 		//Get main layer of map
-		TiledMapTileLayer mainlayer = (TiledMapTileLayer) this.mainclass.getMapHandler().getLayer(0);
+		MapHandler maphandler = this.mainclass.getMapHandler();
+		TiledMapTileLayer mainlayer = (TiledMapTileLayer) maphandler.getLayer(0);
 		
 		//Max height & width for the camera to be at
-		int maxheight = mainlayer.getHeight() * 32;
-		int maxwidth = mainlayer.getWidth() * 32;
+		int maxheight = ((mainlayer.getHeight() * 32) - Gdx.graphics.getHeight()) - Gdx.graphics.getHeight() / 2;
+		int maxwidth = (mainlayer.getWidth() * 32) - Gdx.graphics.getWidth();
 		
 		//Min height & width for the camera to be at
-		int minheight = Gdx.graphics.getHeight();
-		int minwidth = Gdx.graphics.getWidth();
+		int minheight = Gdx.graphics.getHeight() / 2;
+		int minwidth = Gdx.graphics.getWidth() / 2;
 		
 		//Clamp x: max
 		if (this.camera.position.x > maxwidth) {
@@ -89,18 +93,18 @@ public class Renderer {
 		}
 		
 		//Clamp x: min
-		if (this.camera.position.x > minwidth) {
+		if (this.camera.position.x < minwidth) {
 			this.camera.position.set(minwidth, this.camera.position.y, 0) ;
 		}
 		
 		//Clamp y: max
 		if (this.camera.position.y > maxheight) {
-			this.camera.position.set(this.camera.position.y, maxheight, 0) ;
+			this.camera.position.set(this.camera.position.x, maxheight , 0) ;
 		}
 		
 		//Clamp y: min
-		if (this.camera.position.y > minheight) {
-			this.camera.position.set(this.camera.position.y, minheight, 0) ;
+		if (this.camera.position.y < minheight) {
+			this.camera.position.set(this.camera.position.x, minheight, 0) ;
 		}
 	}
 	

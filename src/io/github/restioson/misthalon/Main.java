@@ -30,24 +30,22 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create() {
 		
-		//Create player
-		player = new Player(new Texture(Gdx.files.internal("data/placeholder.png")), new Rectangle(), this);
-		
-		
-		//Create renderer
-		renderer = new Renderer(this);
-		
 		//Create handlers
 		inputhandler = new InputHandler(this);
 		Gdx.input.setInputProcessor(inputhandler);
 		maphandler = new MapHandler(this, "lolxd.tmx");
 		collisionhandler = new CollisionHandler(this);
 		
+		//Create renderer
+		renderer = new Renderer(this);
 
 		//Create entities array
 		entities = new Array<Entity>();
 		
-		//Align player to center tile
+		//Create player
+		player = new Player(new Texture(Gdx.files.internal("data/placeholder.png")), new Rectangle(), this);
+		
+		//Align player to center of screen
 		Vector3 screencenter = new Vector3(Gdx.graphics.getWidth() / 2, Gdx.graphics.getWidth() / 2, 0);
 		Vector3 worldcenter = renderer.getCamera().unproject(screencenter);
 		player.setX(worldcenter.x);
@@ -61,6 +59,19 @@ public class Main extends ApplicationAdapter {
 		
 		/* Game logic */
 		
+		//Process input
+		inputhandler.processInput();
+		
+		//Move entities
+		for (Entity curentity : entities) {
+			
+			curentity.move();
+			
+		}
+		
+		//Move player
+		player.move();
+		
 		//Collision
 		collisionhandler.handleMapCollisions();
 		
@@ -69,6 +80,25 @@ public class Main extends ApplicationAdapter {
 		
 		//Prevent the camera from leaving map
 		renderer.clampCamera();
+		
+		//Clamp MapClampedEntities to map
+		for (Entity entity : entities) {
+			
+			//Check if entity extends MapClampedEntity
+			if (MapClampedEntity.class.isAssignableFrom(entity.getClass())) {
+				
+				//Cast entity
+				MapClampedEntity entityClamped = (MapClampedEntity) entity;
+				
+				//Clamp entity
+				entityClamped.clampMap();
+				
+			}
+			
+		}
+		
+		//Clamp player to map
+		//player.clampMap();
 		
 		/* Render game */
 		renderer.render();
@@ -103,16 +133,11 @@ public class Main extends ApplicationAdapter {
 	
 	//Method to get camera
 	public OrthographicCamera getCamera() {
-		return this.renderer.getCamera();
-	}
-	
-	//Method to translate player & camera
-	public void translatePlayer(int x, int y) {
-		this.player.translate((float) x, (float) y);
+		return renderer.getCamera();
 	}
 	
 	//Method to get maphandler
 	public MapHandler getMapHandler() {
-		return this.maphandler;
+		return maphandler;
 	}
 }

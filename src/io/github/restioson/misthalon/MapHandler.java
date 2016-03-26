@@ -44,6 +44,11 @@ public class MapHandler {
 		return this.tiledMap.getLayers().get(index);
 	}
 	
+	//Method to get layer of map
+	public MapLayer getLayer(String name) {
+		return this.tiledMap.getLayers().get(name);
+	}
+	
 	//Set camera view
 	public void setView(OrthographicCamera camera) {
 		this.tiledMapRenderer.setView(camera);
